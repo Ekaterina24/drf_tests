@@ -58,6 +58,11 @@ class TestViewSet(ModelViewSet):
         cats = Category.objects.get(pk=pk)
         return Response({'cats': cats.title})
 
+    @action(methods=['get'], detail=False)  # вывод категорий
+    def categories(self, request):
+        cats = Category.objects.all()
+        return Response({'cats': [c.title for c in cats]})
+
 
 # class UserTestsRelationView(UpdateModelMixin, GenericViewSet):
 #     permission_classes = [IsAuthenticated, ]

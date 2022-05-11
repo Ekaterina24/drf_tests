@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 # from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 
 class Answer(models.Model):
@@ -26,8 +27,16 @@ class Question(models.Model):
         verbose_name_plural = 'Вопросы'
 
 
+def test_val(value):
+    if (len(value) > 50):
+        raise serializers.ValidationError('Слишком длинный заголовок для теста!')
+    return value
+
+
 class Test(models.Model):
-    title = models.CharField(verbose_name='Название теста', max_length=100)
+    title = models.CharField(verbose_name='Название теста', max_length=100, validators=[
+        test_val
+    ])
     questions = models.ManyToManyField(
         Question, verbose_name='Вопросы', default='')
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='my_tests')
