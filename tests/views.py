@@ -48,7 +48,7 @@ class TestViewSet(ModelViewSet):
         pk = self.kwargs.get('pk')
 
         if not pk:
-            return Test.objects.all()[:3]
+            return Test.objects.all()
 
         return Test.objects.filter(pk=pk)
 

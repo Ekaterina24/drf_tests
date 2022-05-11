@@ -15,11 +15,6 @@ class TestSerializer(serializers.ModelSerializer):
         model = Test
         fields = '__all__'
 
-    # def test_val(self, value):
-    #     if (len(value.title) > 20):
-    #         raise serializers.ValidationError('Many')
-    #     return value
-
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
