@@ -22,7 +22,7 @@ from tests.views import *
 router = DefaultRouter()
 
 router.register(r'categories', CategoryViewSet)
-router.register(r'tests', TestViewSet)
+router.register(r'tests', TestViewSet, basename='tests')
 router.register(r'questions', QuestionViewSet)
 router.register(r'answers', AnswerViewSet)
 # router.register(r'tests_relation', UserTestsRelationView)

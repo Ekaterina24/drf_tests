@@ -2,11 +2,13 @@ from django.db.models import Q
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.mixins import UpdateModelMixin, ListModelMixin, CreateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.response import Response
 
 from .permissions import IsOwnerOrStaffOrReadOnly, IsAdminUserOrReadOnly, IsAdminOrReadOnly
 from .serializers import *
@@ -31,7 +33,6 @@ class TestViewSetPagination(PageNumberPagination):
 
 
 class TestViewSet(ModelViewSet):
-    queryset = Test.objects.all()
     serializer_class = TestSerializer
     pagination_class = TestViewSetPagination
     filter_backends = [SearchFilter, OrderingFilter, ]
@@ -42,6 +43,20 @@ class TestViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.validated_data['owner'] = self.request.user
         serializer.save()
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+
+        if not pk:
+            return Test.objects.all()[:3]
+
+        return Test.objects.filter(pk=pk)
+
+    # добавляем маршрут для категории
+    @action(methods=['get'], detail=True) # вывод категории
+    def category(self, request, pk=None):
+        cats = Category.objects.get(pk=pk)
+        return Response({'cats': cats.title})
 
 
 # class UserTestsRelationView(UpdateModelMixin, GenericViewSet):
