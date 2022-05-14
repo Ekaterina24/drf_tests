@@ -2,10 +2,12 @@ from django.contrib.auth.models import User
 from django.db import models
 # from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from simple_history.models import HistoricalRecords
 
 
 class Answer(models.Model):
     text = models.CharField(verbose_name='Текст ответа', max_length=100)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.text}'
@@ -18,6 +20,7 @@ class Answer(models.Model):
 class Question(models.Model):
     text = models.CharField(verbose_name='Текст вопроса', max_length=100)
     answer = models.ManyToManyField(Answer, verbose_name='Ответы', default='')
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.text}'
@@ -41,6 +44,7 @@ class Test(models.Model):
         Question, verbose_name='Вопросы', default='')
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='my_tests')
     readers = models.ManyToManyField(User, through='UserTestRelation', related_name='tests')
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.title}'
@@ -54,6 +58,7 @@ class Category(models.Model):
     title = models.CharField(verbose_name='Название категории', max_length=100)
     description = models.TextField(verbose_name='Описание категории')
     test = models.ManyToManyField(Test, verbose_name='Тесты', default='')
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.title}'
@@ -77,6 +82,7 @@ class UserTestRelation(models.Model):
     like = models.BooleanField(default=False)
     in_bookmarks = models.BooleanField(default=False)
     rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES, null=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.user.username}: {self.test.title}, RATE {self.rate}'
