@@ -38,10 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
+    'modeltranslation',
     'simple_history',
     'django_filters',
     'social_django',
-    'rest_framework',
 
     'tests'
 ]
@@ -117,13 +118,20 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+gettext = lambda s: s
+
+LANGUAGES = (
+    ('ru', gettext(u'Русский')),
+    ('en', gettext(u'Английский')),
+)
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,15 +1,17 @@
 from django.db.models import Q
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, mixins
+from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.mixins import UpdateModelMixin, ListModelMixin, CreateModelMixin
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
+
+from django.utils import translation
 from .permissions import IsOwnerOrStaffOrReadOnly, IsAdminUserOrReadOnly, IsAdminOrReadOnly
 from .serializers import *
 
@@ -18,6 +20,11 @@ class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminUserOrReadOnly, ]
+
+    def initial(self, request, *args, **kwargs):
+        language = kwargs.get('lang')
+        translation.activate(language)
+        super(CategoryViewSet, self).initial(request, *args, **kwargs)
 
 
 class CategoryAPIDestroy(generics.RetrieveDestroyAPIView):
@@ -54,26 +61,14 @@ class TestViewSet(ModelViewSet):
 
     # добавляем маршрут для категории
     @action(methods=['get'], detail=True) # вывод категории
-    def category(self, request, pk=None):
-        cats = Category.objects.get(pk=pk)
-        return Response({'cats': cats.title})
+    def category(self, request, pk):
+        cat = Category.objects.get(pk=pk)
+        return Response({'cat': cat.title})
 
     @action(methods=['get'], detail=False)  # вывод категорий
     def categories(self, request):
         cats = Category.objects.all()
         return Response({'cats': [c.title for c in cats]})
-
-
-# class UserTestsRelationView(UpdateModelMixin, GenericViewSet):
-#     permission_classes = [IsAuthenticated, ]
-#     queryset = UserTestRelation.objects.all()
-#     serializer_class = UserTestRelationSerializer
-#     lookup_field = 'test'
-#
-#     def get_object(self):
-#         obj, _ = UserTestRelation.objects.get_or_create(user=self.request.user,
-#                                                         test_id=self.kwargs['test'])
-#         return obj
 
 
 class UserTestsRelationAllView(ModelViewSet, CreateModelMixin):
@@ -86,7 +81,7 @@ class UserTestsRelationAllView(ModelViewSet, CreateModelMixin):
 
 class UserTestsRelationQView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, ]
-    queryset = UserTestRelation.objects.filter(Q(like__startswith='1') | Q(like__startswith='2'))
+    queryset = UserTestRelation.objects.filter(Q(rate__startswith='4') | Q(rate__startswith='5'))
     serializer_class = UserTestRelationSerializer
 
 

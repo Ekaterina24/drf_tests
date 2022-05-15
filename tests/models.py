@@ -58,7 +58,6 @@ class Category(models.Model):
     title = models.CharField(verbose_name='Название категории', max_length=100)
     description = models.TextField(verbose_name='Описание категории')
     test = models.ManyToManyField(Test, verbose_name='Тесты', default='')
-    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.title}'
